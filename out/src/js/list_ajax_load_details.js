@@ -130,6 +130,19 @@ var gw_product_list_item_iterator = 0,
             }
         }
 
+        /**
+         * orders the from list chosen color to start of the color icon list
+         */
+        function gw_order_active_color_to_start($ajax_content_box) {
+            // get the initially color variant
+            var sibling_id = $ajax_content_box.data('sibling-id');
+            if(sibling_id) {
+                $ajax_content_box.find("li[data-sibling-id='"+sibling_id+"']").css({
+                    'order': '-1'
+                });
+            }
+        }
+
         //********************************************
         //********************************************
         //********************************************
@@ -221,6 +234,7 @@ var gw_product_list_item_iterator = 0,
 
                         // console.log(article_loaded_event);
 
+                        // call js
                         gw_call_availablilty_reminder_js();
                     },
 
@@ -264,6 +278,9 @@ var gw_product_list_item_iterator = 0,
                 success: function(data){
                     $ajax_content_box.html($(data).find("#details_container"));
 
+                    //
+                    gw_order_active_color_to_start($ajax_content_box);
+
                     gw_call_availablilty_reminder_js();
                 },
 
@@ -289,6 +306,18 @@ var gw_product_list_item_iterator = 0,
             return false;
         });
 
+        // sibling id (color variant in list)
+        $("body").on('article_loaded', function(event){
+            console.log(event);
+            var $color_picker = event.content_box.find(".gw-article-color-picker");
+            if($color_picker.length > 0) {
+                var initial_active_model_id = $color_picker.find('li.active').data('sibling-id');
+                event.content_box.data('sibling-id', initial_active_model_id);
+            }
+
+            gw_order_active_color_to_start(event.content_box);
+        });
+
         // scroll down to active article
         $("body").on('article_loaded_and_slide_down', function(event){
             var parent_position = event.list_element.offset();
@@ -301,6 +330,11 @@ var gw_product_list_item_iterator = 0,
         // when infinite scrolling was done, ajax elements has to be appended to the loaded objects
         $(document).bind("infiniteScrollingDone", function(){
             gw_append_ajax_list_elements();
+        });
+
+        $(document).bind("ajaxComplete", function(event){
+            var $content_box = $(event.target).find(".gw-product-list-ajax-content.active")
+            gw_order_active_color_to_start($content_box);
         });
 
         // jQuery Code End
