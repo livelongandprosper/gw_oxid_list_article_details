@@ -1,5 +1,6 @@
 var gw_product_list_item_iterator = 0,
-    ajax_content_iterator_row = 0,
+    ajax_content_iterator_row = 0, // counter for content boxes which should hold the via ajax loaded content, used to let these boxes have an unique ID
+    ajax_content_iterator_2_column_row = 0,
     ajax_content_iterator_item = 0
 ;
 
@@ -24,6 +25,7 @@ var gw_product_list_item_iterator = 0,
          */
         function gw_append_ajax_list_elements() {
             var $not_prepared_productData_elements = $(".list-container .productData").not(".ajax-prepared"),
+                $list_every_second_list_elment = $(".list-container .productData:odd").not(".ajax-prepared");
                 $list_rows = $(".list-container > .row").not(".ajax-prepared");
             ;
 
@@ -36,6 +38,15 @@ var gw_product_list_item_iterator = 0,
                 // this row is prepared now
                 $(this).addClass('ajax-prepared');
                 ajax_content_iterator_row+=1;
+            });
+
+            // append ajax_content_placeholders for 2-column rows (tablet)
+            $list_every_second_list_elment.each(function(){
+                $(this).after('<div id="gw-product-list-2-column-row-ajax-content-'+(ajax_content_iterator_2_column_row)+'" class="gw-product-list-2-column-row-ajax-content gw-product-list-ajax-content"></div>');
+
+                // this 2 column row is prepared now
+                $(this).addClass('ajax-prepared');
+                ajax_content_iterator_2_column_row+=1;
             });
 
             // append ajax_content_placeholders for each list item (mobile)
@@ -158,9 +169,19 @@ var gw_product_list_item_iterator = 0,
         // here comes the actual click action on the list item trigger
         $(document).on('click', ".ajax-prepared .gw-product-list-item-trigger", function(e){
             var $parent_item = $(this).parent(),
-                $ajax_content_box = $($(window).width() < 768 ? $(this).parent().attr("rel") : $(this).parents(".row").attr("rel") ), // div where the ajax details infos will be loaded to
+                $ajax_content_box = // div where the ajax details infos will be loaded to
+                    $($(window).width() < 768 ?
+                        $parent_item.attr("rel"):
+                        $(window).width() < 992 ? "#"+$parent_item.nextAll(".gw-product-list-2-column-row-ajax-content").attr("id")
+                            : $(this).parents(".row").attr("rel")
+                    ),
                 $all_list_items = $(".list-container .productData"),
                 ajax_load_url = $parent_item.find(".title a").attr("href");
+
+            // if no ajax content box was found, select the last available row
+            if($ajax_content_box.length == 0) {
+                $ajax_content_box = $($parent_item.parents(".row").attr("rel"));
+            }
 
             // set classes
             if($parent_item.hasClass("active")) { // is clicked product already active? then deactivate it
@@ -184,7 +205,7 @@ var gw_product_list_item_iterator = 0,
                         $(this).removeClass('active active-0 active-1 active-2 active-3');
                         $(this).slideUp();
                         $(this).html("");
-                        console.log('remove class from #'+$(this).attr("id"));
+                        // console.log('remove class from #'+$(this).attr("id"));
                     }
                 });
 
