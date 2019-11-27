@@ -3,6 +3,8 @@ var gw_product_list_item_iterator = 0,
     ajax_content_iterator_2_column_row = 0,
     ajax_content_iterator_item = 0
 ;
+var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column view will be std view also in mobile view
+    gw_max_tablet_device_width = 991; // break point where every row has a div in which ajax content is loaded
 
 // IIFE - Immediately Invoked Function Expression
 (function(gw) {
@@ -170,9 +172,9 @@ var gw_product_list_item_iterator = 0,
         $(document).on('click', ".ajax-prepared .gw-product-list-item-trigger", function(e){
             var $parent_item = $(this).parent(),
                 $ajax_content_box = // div where the ajax details infos will be loaded to
-                    $($(window).width() < 768 ?
+                    $($(window).width() <= gw_max_mobile_device_width ?
                         $parent_item.attr("rel"):
-                        $(window).width() < 992 ? "#"+$parent_item.nextAll(".gw-product-list-2-column-row-ajax-content").attr("id")
+                        $(window).width() <= gw_max_tablet_device_width ? "#"+$parent_item.nextAll(".gw-product-list-2-column-row-ajax-content").attr("id")
                             : $(this).parents(".row").attr("rel")
                     ),
                 $all_list_items = $(".list-container .productData"),
