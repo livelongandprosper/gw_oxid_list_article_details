@@ -169,7 +169,7 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
         gw_append_ajax_list_elements();
 
         // here comes the actual click action on the list item trigger
-        $(document).on('click', ".ajax-prepared .gw-product-list-item-trigger", function(e){
+        $(document).on("click", ".ajax-prepared .gw-product-list-item-trigger", function(e, triggerArticleLoadedEvent){
             var $parent_item = $(this).parent(),
                 $ajax_content_box = // div where the ajax details infos will be loaded to
                     $($(window).width() <= gw_max_mobile_device_width ?
@@ -232,8 +232,8 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
                     data: {gwlistarticledetails:1},
                     timeout: 5000,
                     success: function(data){
+
                         $ajax_content_box.html($(data).find("#details_container"));
-                        $ajax_content_box.append('<div class="gw-ajax-content-closer"><span class="gw-icon-bar"></span><span class="gw-icon-bar"></span></div>')
 
                         // slide down content
                         $ajax_content_box.stop(true,true).slideDown(function() {
@@ -249,13 +249,22 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
                             // console.log(article_loaded_and_slide_down_event);
                         });
 
-                        // trigger event article_loaded
-                        var article_loaded_event = jQuery.Event( "article_loaded" );
-                        article_loaded_event.content_box = $ajax_content_box;
-                        article_loaded_event.list_element = $parent_item
-                        $("body").trigger(article_loaded_event);
+                        if(typeof triggerArticleLoadedEvent === "undefined" || triggerArticleLoadedEvent == true) {
+                            // trigger event article_loaded
+                            var article_loaded_event = jQuery.Event( "article_loaded" );
+                            article_loaded_event.content_box = $ajax_content_box;
+                            article_loaded_event.list_element = $parent_item;
+                            article_loaded_event.pagetitle = $ajax_content_box.find(".productTitle").first().text() + " " + $ajax_content_box.find(".gw-article-number").first().text();
+                            article_loaded_event.url = ajax_load_url;
+                            $("body").trigger(article_loaded_event);
+                        }
 
-                        // console.log(article_loaded_event);
+                        // send pageview event to google analytics if goggle analytics is active
+                        if(typeof ga !== "undefined") {
+                            ga('send', 'pageview', ajax_load_url);
+                        } else {
+                            // console.warn("gw_oxid_list_article_details: ga is not loaded");
+                        }
 
                         // call js
                         gw_call_availablilty_reminder_js();
@@ -331,7 +340,7 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
 
         // sibling id (color variant in list)
         $("body").on('article_loaded', function(event){
-            console.log(event);
+            // console.log(event);
             var $color_picker = event.content_box.find(".gw-article-color-picker");
             if($color_picker.length > 0) {
                 var initial_active_model_id = $color_picker.find('li.active').data('sibling-id');
@@ -357,8 +366,33 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
 
         $(document).bind("ajaxComplete", function(event){
             var $content_box = $(event.target).find(".gw-product-list-ajax-content.active")
+            $content_box.append('<div class="gw-ajax-content-closer"><span class="gw-icon-bar"></span><span class="gw-icon-bar"></span></div>')
             gw_order_active_color_to_start($content_box);
         });
+
+        /**
+         * Article loaded event: push history state
+         */
+        var article_loaded_counter = 1;
+        $("body").on("article_loaded", function(event){
+            if(!event.list_element.attr("id")) {
+                event.list_element.attr("id", "article-loaded-"+article_loaded_counter++)
+            }
+            // add history state (save jquery selector of element that has to clicked if popstate ist called
+            // console.log(event.list_element);
+            var stateObj = {listElement : "#"+event.list_element.attr("id")};
+            history.pushState(stateObj, event.pagetitle, event.url);
+        });
+
+        /**
+         * if event is poped trigger click on list element
+         * @param event
+         */
+        window.onpopstate = function(event) {
+            if(typeof event.state.listElement !== "undefined") {
+                $(event.state.listElement).find(".gw-product-list-item-trigger").trigger("click", [false]);
+            }
+        };
 
         // jQuery Code End
         /////////////////////////////

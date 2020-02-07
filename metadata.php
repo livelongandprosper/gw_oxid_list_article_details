@@ -19,7 +19,7 @@ $aModule = array(
     'id'           => 'gw_oxid_list_article_details',
     'title'        => 'Artikel Details in Listen laden',
 //     'thumbnail'    => 'out/admin/img/logo.jpg',
-    'version'      => '1.0.2',
+    'version'      => '1.0.3',
     'author'       => 'Gregor Wendland',
     'email'		   => 'kontakt@gewend.de',
     'url'		   => 'https://www.gewend.de',
@@ -29,6 +29,7 @@ $aModule = array(
 							<li>Standard-Artikel-Detailseiten stehen weiterhin zur Verfügung</li>
 							<li>Unterstützung des digidesk Moduls Verfügbarkeitsbenachrichtigung (JavaScript muss nach dem Laden von Daten in der Liste abgefeuert werden, siehe gw_call_availablilty_reminder_js())</li>
 							<li>Unterstützung für 1-, 2- und 4-spaltige Layouts</li>
+							<li>Beim Ausklappen eines Artikels wird die URL des Artikels in die Browserzeile/-Historie übernommen</li>
 						</ul>',
     ),
     'extend'       => array(
