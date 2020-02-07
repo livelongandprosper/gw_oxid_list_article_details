@@ -261,7 +261,7 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
 
                         // send pageview event to google analytics if goggle analytics is active
                         if(typeof ga !== "undefined") {
-                            ga('send', 'pageview', ajax_load_url);
+                            ga('send', 'pageview', window.location.pathname+window.location.search);
                         } else {
                             // console.warn("gw_oxid_list_article_details: ga is not loaded");
                         }
