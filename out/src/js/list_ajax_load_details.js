@@ -200,7 +200,7 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
                     $ajax_content_box.removeClass('active active-0 active-1 active-2 active-3');
                     $ajax_content_box.html("");
                 });
-                console.log("article clicked again -> close");
+                //console.log("article clicked again -> close");
             } else {  // is inactive? then activate it
                 // remove active classes from all list items
                 $all_list_items.removeClass("active");
@@ -324,12 +324,30 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
             // e.preventDefault();
             var $ajax_content_box = $(this).parents(".details-container"),
                 ajax_load_url = $(this).attr("href");
+
+            let $ajaxLoader = $ajax_content_box.find(".ajax-content-loader");
+
+            // Create a loading circle if this item doesn't have one yet.
+            if($ajaxLoader.length === 0) {
+
+                $ajax_content_box.append("<div class=\"ajax-content-loader\" />");
+                $ajaxLoader = $ajax_content_box.find(".ajax-content-loader");
+
+            }
+            $ajaxLoader.fadeIn();
+
             $.ajax({
                 url: ajax_load_url,
                 type: "GET",
                 data: {gwlistarticledetails:1},
                 timeout: gw_ajax_timeout,
                 success: function(data){
+
+                    $ajaxLoader.fadeOut(function(){
+
+                        $(this).remove();
+
+                    });
                     $ajax_content_box.html( $(data).find("#details_container") );
 
                     gw_order_active_color_to_start($ajax_content_box);
