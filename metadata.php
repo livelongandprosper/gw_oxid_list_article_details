@@ -19,13 +19,13 @@ $aModule = array(
     'id'           => 'gw_oxid_list_article_details',
     'title'        => 'Artikel Details in Listen laden',
 //     'thumbnail'    => 'out/admin/img/logo.jpg',
-    'version'      => '1.0.3',
+    'version'      => '1.0.4',
     'author'       => 'Gregor Wendland',
     'email'		   => 'kontakt@gewend.de',
     'url'		   => 'https://www.gewend.de',
     'description'  => array(
     	'de'		=> 'Ermöglicht das nachladen von Artikel-Details in Artikel-Listen (z.B. Kategorien, Suche) per Klick<ul>
-							<li>Bildet die wesentlichen Funktionen der Artikel-Detailseite ab</li>
+							<li>Bildet die wesentlichen Funktionen der Artikel-Detailseite nach Klick ab (Funktioneirt auf Kategorie-, Such- und Aktionslisten (Startseite))</li>
 							<li>Standard-Artikel-Detailseiten stehen weiterhin zur Verfügung</li>
 							<li>Unterstützung des digidesk Moduls Verfügbarkeitsbenachrichtigung (JavaScript muss nach dem Laden von Daten in der Liste abgefeuert werden, siehe gw_call_availablilty_reminder_js())</li>
 							<li>Unterstützung für 1-, 2- und 4-spaltige Layouts</li>
@@ -59,6 +59,18 @@ $aModule = array(
 			'template' => 'page/details/inc/productmain.tpl',
 			'block' => 'details_productmain_tobasket',
 			'file' => 'Application/views/blocks/gw_details_productmain_tobasket.tpl'
+		),
+		array(
+			/*'theme' => 'flow',*/
+			'template' => 'page/shop/start.tpl',
+			'block' => 'gw_start_actions',
+			'file' => 'Application/views/blocks/gw_start_actions.tpl'
+		),
+		array(
+			/*'theme' => 'flow',*/
+			'template' => 'page/details/inc/productmain.tpl',
+			'block' => 'gw_details_crossselling',
+			'file' => 'Application/views/blocks/gw_details_crossselling.tpl'
 		),
 	),
 	'events'       => array(

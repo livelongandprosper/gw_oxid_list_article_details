@@ -6,6 +6,8 @@ var gw_product_list_item_iterator = 0,
 var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column view will be std view also in mobile view
     gw_max_tablet_device_width = 991; // break point where every row has a div in which ajax content is loaded
 
+var gw_ajax_timeout = 15000; // ms to ajax timeout
+
 // IIFE - Immediately Invoked Function Expression
 (function(gw) {
     // The global jQuery object is passed as a parameter
@@ -166,7 +168,13 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
         //
 
         // prepare ajax dom elements initially
-        gw_append_ajax_list_elements();
+        if(
+            $('body').hasClass('cl-alist')
+            || $('body').hasClass('cl-search')
+            || $('body').hasClass('cl-start')
+        ) {
+            gw_append_ajax_list_elements();
+        }
 
         // here comes the actual click action on the list item trigger
         $(document).on("click", ".ajax-prepared .gw-product-list-item-trigger", function(e, triggerArticleLoadedEvent){
@@ -192,6 +200,7 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
                     $ajax_content_box.removeClass('active active-0 active-1 active-2 active-3');
                     $ajax_content_box.html("");
                 });
+                console.log("article clicked again -> close");
             } else {  // is inactive? then activate it
                 // remove active classes from all list items
                 $all_list_items.removeClass("active");
@@ -202,10 +211,21 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
                 // slide up all ajax_content boxes that should not be opened
                 // console.log($ajax_content_box.attr("id"));
                 // this is very important to prevent errors while changing color and choosing size in different ajax content boxes
-                $(".gw-product-list-ajax-content").each(function(){
+                $(".gw-product-list-ajax-content:visible").each(function(){
                     if($(this).attr("id") != $ajax_content_box.attr("id")) {
+                        var windowOffsetBefore = window.pageYOffset,
+                            elementOffsetBefore = $(this).offset(),
+                            heightBefore = $(this)[0].offsetHeight;
                         $(this).removeClass('active active-0 active-1 active-2 active-3');
-                        $(this).slideUp();
+                        $(this).slideUp({
+                            progress: function(animation){
+                                if(windowOffsetBefore > elementOffsetBefore.top) {
+                                    var heightNow = animation.elem.offsetHeight;
+                                    window.scrollTo(0, windowOffsetBefore + heightNow - heightBefore);
+                                }
+                            }
+                        });
+
                         $(this).html("");
                         // console.log('remove class from #'+$(this).attr("id"));
                     }
@@ -230,7 +250,7 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
                     url: ajax_load_url,
                     type: "GET",
                     data: {gwlistarticledetails:1},
-                    timeout: 5000,
+                    timeout: gw_ajax_timeout,
                     success: function(data){
 
                         $ajax_content_box.html($(data).find("#details_container"));
@@ -296,24 +316,50 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
         $(document).on("click", ".gw-ajax-content-closer", function() {
             $(".list-container .productData").removeClass("active");
             $(this).parent().slideUp();
+            //console.log("gw-ajax-content-closer");
         });
 
         // color variant chooser
-        $(document).on("click", ".gw-article-color-picker li a", function(){
-            var $ajax_content_box = $(".gw-product-list-ajax-content.active"),
+        $(document).on("click", ".gw-article-color-picker li a", function(e){
+            // e.preventDefault();
+            var $ajax_content_box = $(this).parents(".details-container"),
                 ajax_load_url = $(this).attr("href");
             $.ajax({
                 url: ajax_load_url,
                 type: "GET",
                 data: {gwlistarticledetails:1},
-                timeout: 5000,
+                timeout: gw_ajax_timeout,
                 success: function(data){
-                    $ajax_content_box.html($(data).find("#details_container"));
+                    $ajax_content_box.html( $(data).find("#details_container") );
 
-                    //
                     gw_order_active_color_to_start($ajax_content_box);
 
                     gw_call_availablilty_reminder_js();
+
+                    // if loaded content is stored in lightbox
+                    (function() {
+
+                        // replace ids
+                        $("#dynamicContent").find("[id]").each(function(){
+
+                            const elementId = $(this).attr("id");
+                            if($("#"+elementId).length > 0) {
+
+                                $(this).attr("id", elementId+"-lightbox");
+
+                            }
+
+                        });
+
+                        // add lightbox parameter to urls
+                        $("#dynamicContent a[href]").each(function(){
+                            const link = $(this).attr("href");
+                            if(link) {
+                                $(this).attr("href", link + (link.indexOf("?") != -1 ? "&" : "?") + "lightbox=1");
+                            }
+                        });
+
+                    })();
                 },
 
                 // Timeout
@@ -389,8 +435,10 @@ var gw_max_mobile_device_width = 0, // std: 767; if this is set to 0 2 column vi
          * @param event
          */
         window.onpopstate = function(event) {
-            if(typeof event.state.listElement !== "undefined") {
-                $(event.state.listElement).find(".gw-product-list-item-trigger").trigger("click", [false]);
+            if(event.state && typeof event.state.listElement !== "undefined") {
+                if(!$(event.state.listElement).hasClass("active")) {
+                    $(event.state.listElement).find(".gw-product-list-item-trigger").trigger("click", [false]);
+                }
             }
         };
 

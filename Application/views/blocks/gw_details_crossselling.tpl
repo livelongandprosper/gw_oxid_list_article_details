@@ -1,0 +1,7 @@
+[{if !$oxcmp_shop->oxshops__oxproductive->value}]
+    [{oxscript include=$oViewConf->getModuleUrl('gw_oxid_list_article_details','out/src/js/list_ajax_load_details.js')  priority=30}]
+[{else}]
+    [{assign var="jsFiletime" value=$oViewConf->getModulePath('gw_oxid_list_article_details','out/src/js/list_ajax_load_details.min.js')|filemtime}]
+    [{oxscript include=$oViewConf->getModuleUrl('gw_oxid_list_article_details','out/src/js/list_ajax_load_details.min.js')|cat:'?'|cat:$jsFiletime  priority=30}]
+[{/if}]
+[{$smarty.block.parent}]

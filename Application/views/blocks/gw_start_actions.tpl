@@ -7,7 +7,7 @@
 
 [{* variant selection / details scripts *}]
 [{oxscript include="js/libs/photoswipe.min.js" priority=8}]
-[{oxscript include="js/libs/photoswipe-ui-default.min.js" priority=8*}]
+[{oxscript include="js/libs/photoswipe-ui-default.min.js" priority=8}]
 [{oxscript include="js/pages/details.min.js" priority=10}]
 [{oxscript include="js/widgets/oxajax.min.js" priority=10}]
 [{oxscript include="js/widgets/oxarticlevariant.min.js" priority=10}]
