@@ -13,6 +13,6 @@
 [{oxscript include="js/widgets/oxarticlevariant.min.js" priority=10}]
 
 [{assign var="cssFiletime" value=$oViewConf->getModulePath('gw_oxid_list_article_details','out/src/css/gw_oxid_list_article_details.css')|filemtime}]
-[{oxstyle include=$oViewConf->getModuleUrl('gw_oxid_list_article_details','out/src/css/gw_oxid_list_article_details.css')|cat:'?'|cat:$cssFiletime}]
+<link rel="stylesheet" media="print" href="[{$oViewConf->getModuleUrl('gw_oxid_list_article_details','out/src/css/gw_oxid_list_article_details.css')|cat:'?'|cat:$cssFiletime}]" as="style" onload="this.media='screen'""><noscript><link rel="stylesheet" href="[{$oViewConf->getModuleUrl('gw_oxid_list_article_details','out/src/css/gw_oxid_list_article_details.css')|cat:'?'|cat:$cssFiletime}]"></noscript>
 
 [{$smarty.block.parent}]
