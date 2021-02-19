@@ -19,10 +19,10 @@ $aModule = array(
     'id'           => 'gw_oxid_list_article_details',
     'title'        => 'Artikel Details in Listen laden',
 //     'thumbnail'    => 'out/admin/img/logo.jpg',
-    'version'      => '1.0.6',
+    'version'      => '1.0.7',
     'author'       => 'Gregor Wendland',
-    'email'		   => 'kontakt@gewend.de',
-    'url'		   => 'https://www.gewend.de',
+    'email'		   => 'oxid@gregor-wendland.de',
+    'url'		   => 'https://www.gregor-wendland.com',
     'description'  => array(
     	'de'		=> 'Ermöglicht das nachladen von Artikel-Details in Artikel-Listen (z.B. Kategorien, Suche) per Klick<ul>
 							<li>Bildet die wesentlichen Funktionen der Artikel-Detailseite nach Klick ab (Funktioneirt auf Kategorie-, Such- und Aktionslisten (Startseite))</li>
