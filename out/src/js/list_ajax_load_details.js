@@ -217,7 +217,7 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
                 $all_list_items.removeClass("active");
 
                 // get the position in list of elements of that line
-                var position_in_row = $parent_item.parent().find("[class='"+$parent_item.attr("class")+"']").index($parent_item);
+                var position_in_row = $parent_item.parent().find("[class*='productData']").index($parent_item);
 
                 // slide up all ajax_content boxes that should not be opened
                 // console.log($ajax_content_box.attr("id"));
