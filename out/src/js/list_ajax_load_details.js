@@ -86,29 +86,29 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
             if( $UserInfoModal.length )
             {
                 $UserInfoModal.on( 'shown.bs.modal', function()
-                    {
-                        var bsModal = $( this ).data( 'bs.modal' );
+                {
+                    // T-VY6214UVOM-85
+                    var selectedArt = $( '.js-oxProductForm' ).children(".hidden").children("input[name='aid']").val();
+                    $( '.dd-userinfo-article-id', this ).val(selectedArt);
+                    // T-VY6214UVOM-85
 
-                        bsModal.$backdrop.css( 'z-index', 1080 );
-                        bsModal.$element.css( 'z-index', 1090 );
-
-                        $( '.dd-userinfo-article-id', this ).val( bsModal.options.articleId );
-                    }
+                }
                 ).on( 'hidden.bs.modal', function()
                     {
                         $( '.dd-notify-action', this ).removeAttr( 'disabled' );
                     }
                 );
 
+                // Benachrichtigen- Button
                 $( '.dd-notify-action', $UserInfoModal ).on( 'click', function( e )
                     {
                         e.preventDefault();
-
                         var $btn = $( this );
                         var $form = $( '.dd-userinfo-form' );
-
                         var validateFields = [ '#userinfo_field_name', '#userinfo_field_lastname', '#userinfo_field_usermail' ];
                         var valid = true;
+                        var productId = $( '.dd-userinfo-article-id' ).val();
+                        var userMail = $( '#userinfo_field_usermail' ).val();
 
                         validateFields.forEach( function( sFieldID )
                         {
@@ -129,15 +129,22 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
                         if( valid )
                         {
                             $btn.attr( 'disabled', true );
-                            $form.find("[name='cl']").val('details'); // manipulate
-                            $.post( $form.attr( 'action' ), $form.serialize(), function()
+                            $.post( $form.attr( 'action' ), $form.serialize(), function(response)
                                 {
-                                    $UserInfoModal.modal( 'hide' );
+                                    if(response.error){
+                                        $('.errormsg').fadeIn(200);
+                                        $('.savemsg').hide();
+
+                                    } else {
+                                        $('.savemsg').fadeIn(200);
+                                        $('.errormsg').hide();
+                                    }
                                     $('#clearuserinfo').trigger('reset');
+                                    $UserInfoModal.modal( 'hide' );
+
                                 }
                             );
                         }
-
                     }
                 );
 
