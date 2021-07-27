@@ -288,6 +288,11 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
                             // console.warn("gw_oxid_list_article_details: ga is not loaded");
                         }
 
+                        // send ViewContent if fbq is defined
+                        if(typeof fbq !== 'undefined') {
+                            fbq('track', 'ViewContent');
+                        }
+
                         // call js
                         gw_call_availablilty_reminder_js();
                     },
