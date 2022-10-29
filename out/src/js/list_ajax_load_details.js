@@ -126,6 +126,21 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
                             }
                         });
 
+                        // GW 2021-08-05
+                        // validate privacy
+                        var $privacyCheckbox = $("#userinfo_field_acceptprivacy");
+                        if(!$("#userinfo_field_acceptprivacy").is(':checked')) {
+                            valid = false;
+                            $privacyCheckbox.parent().css({
+                                'border' : '1px solid red'
+                            });
+                            alert($privacyCheckbox.data("errorMessage"));
+                        } else {
+                            $privacyCheckbox.parent().css({
+                                'border' : 'none'
+                            });
+                        }
+
                         if( valid )
                         {
                             $btn.attr( 'disabled', true );
