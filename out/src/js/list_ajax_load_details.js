@@ -297,7 +297,11 @@ var gw_ajax_timeout = 15000; // ms to ajax timeout
 
                         // send ViewContent if fbq is defined
                         if(typeof fbq !== 'undefined') {
-                            fbq('track', 'ViewContent');
+                            let articleId = $ajax_content_box.find("input[name='aid']").val();
+                            fbq('track', 'ViewContent', {
+                                content_ids: [articleId],
+                                content_type: 'product'
+                            });
                         }
 
                         // call js
